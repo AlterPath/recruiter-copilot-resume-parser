@@ -79,8 +79,8 @@ class ResumeParser:
                 {"role": "user", "content": f"Резюме для анализа:\n{text}"}
             ],
             stream=False,
-            temperature=0.1,  # Уменьшаем температуру для более предсказуемых ответов
-            max_tokens=2000   # Увеличиваем максимальное количество токенов
+            temperature=0.1,
+            max_tokens=2000
         )
         return response
 
@@ -93,7 +93,6 @@ class ResumeParser:
             if not content:
                 return self._error_template("Empty content in response")
 
-            # Находим начало и конец JSON
             start = content.find('{')
             end = content.rfind('}') + 1
             if start == -1 or end == 0:
@@ -156,15 +155,16 @@ class ResumeParser:
         if data is None:
             return template
             
-        # Рекурсивное слияние структур с сохранением порядка
         if isinstance(template, OrderedDict) and isinstance(data, dict):
             merged = OrderedDict()
             for key in template:
                 merged[key] = self._merge_structures(template[key], data.get(key, None))
             return merged
         elif isinstance(template, list) and isinstance(data, list):
-            if not data:  # Если список пустой
+            if not data:
                 return template
+            if len(template) == 0:  # Handle empty template list
+                return data
             return [self._merge_structures(template[0], item) for item in data]
         else:
             return data if data is not None else template
@@ -175,11 +175,10 @@ class ResumeParser:
             ("data", None)
         ])
 
-# Пример использования
+# Example usage
 api_key = os.environ["DEEPSEEK_API_KEY"]
 parser = ResumeParser(api_key)
 
 resume_text = """Иван Петров 01.01.2003 Контакты: ivan.petrov@example.com +7 900 000-00-00 Образование: технический университет с 09.2022 по настоящее время. Бакалавриат 09.03.01 Информатика и вычислительная техника. Средний балл: 4.4. Опыт: с 02.2025 - практика, разработка бэкенда на FastAPI и PostgreSQL. Навыки: Python, Docker, SQL (PostgreSQL, Redis). GitHub: github.com/example"""
-
 result = parser.parse(resume_text)
-print(json.dumps(result, indent=2, ensure_ascii=False, separators=(',', ': ')))
+print(json.dumps(result, indent=2, ensure_ascii=False))
