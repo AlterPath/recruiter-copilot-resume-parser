@@ -45,3 +45,7 @@ Python, OpenAI SDK, DeepSeek API.
 ## License
 
 [MIT](LICENSE)
+
+---
+
+<sub>The code was written in April 2025 and published on GitHub in November 2026. Commit dates follow the dates of the original files; the README was added at publication.</sub>
